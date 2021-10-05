@@ -191,7 +191,7 @@ void HSS_PrintToolVersions(void)
 bool HSS_E51_Banner(void)
 {
     mHSS_FANCY_PRINTF(LOG_STATUS,
-        "PolarFire(R) SoC Hart Software Services (HSS) - version %d.%d.%d" CRLF
+        "PolarFire(R) SoC Hart Software Services (HSS) - version %d.%d.%d" VENDOR_STRING CRLF
         "MPFS HAL version %d.%d.%d" CRLF
         "(c) Copyright 2017-2021 Microchip FPGA Embedded Systems Solutions." CRLF CRLF,
         HSS_VERSION_MAJOR, HSS_VERSION_MINOR, HSS_VERSION_PATCH,
