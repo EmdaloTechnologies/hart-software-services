@@ -81,8 +81,7 @@ enum CmdId {
 #if IS_ENABLED(CONFIG_SERVICE_QSPI) && (IS_ENABLED(CONFIG_SERVICE_MMC) || IS_ENABLED(CONFIG_SERVICE_PAYLOAD) || IS_ENABLED(CONFIG_SERVICE_SPI))
     CMD_QSPI,
 #endif
-#if IS_ENABLED(CONFIG_SERVICE_MMC) && (IS_ENABLED(CONFIG_SERVICE_QSPI) || IS_ENABLED(CONFIG_SERVICE_PAYLOAD) || IS_ENABLED(CONFIG_SERVICE_SPI))
-    CMD_EMMC,
+#if IS_ENABLED(CONFIG_SERVICE_MMC)
     CMD_MMC,
     CMD_SDCARD,
 #endif
@@ -124,8 +123,7 @@ const struct tinycli_key cmdKeys[] = {
 #if IS_ENABLED(CONFIG_SERVICE_QSPI) && (IS_ENABLED(CONFIG_SERVICE_MMC) || IS_ENABLED(CONFIG_SERVICE_PAYLOAD))
     { CMD_QSPI,    "QSPI",    "Select boot via QSPI." },
 #endif
-#if IS_ENABLED(CONFIG_SERVICE_MMC) && (IS_ENABLED(CONFIG_SERVICE_QSPI) || IS_ENABLED(CONFIG_SERVICE_PAYLOAD))
-    { CMD_EMMC,    "EMMC",    "Select boot via MMC." },
+#if IS_ENABLED(CONFIG_SERVICE_MMC)
     { CMD_MMC,     "MMC",     "Select boot via MMC." },
     { CMD_SDCARD,  "SDCARD",  "Select boot via SDCARD." },
 #endif
@@ -186,8 +184,7 @@ static struct tinycli_command commands[] = {
 #if IS_ENABLED(CONFIG_SERVICE_QSPI) && (IS_ENABLED(CONFIG_SERVICE_MMC) || IS_ENABLED(CONFIG_SERVICE_PAYLOAD) || IS_ENABLED(CONFIG_SERVICE_SPI))
     { CMD_QSPI,    true,  tinyCLI_CmdHandler_ },
 #endif
-#if IS_ENABLED(CONFIG_SERVICE_MMC) && (IS_ENABLED(CONFIG_SERVICE_QSPI) || IS_ENABLED(CONFIG_SERVICE_PAYLOAD) || IS_ENABLED(CONFIG_SERVICE_SPI))
-    { CMD_EMMC,    true,  tinyCLI_CmdHandler_ },
+#if IS_ENABLED(CONFIG_SERVICE_MMC)
     { CMD_MMC,     true,  tinyCLI_CmdHandler_ },
     { CMD_SDCARD,  true,  tinyCLI_CmdHandler_ },
 #endif
@@ -846,12 +843,12 @@ static void tinyCLI_CmdHandler_(int tokenId)
         break;
 #endif
 
-#if IS_ENABLED(CONFIG_SERVICE_MMC) && (IS_ENABLED(CONFIG_SERVICE_QSPI) || IS_ENABLED(CONFIG_SERVICE_PAYLOAD) || IS_ENABLED(CONFIG_SERVICE_SPI))
+#if IS_ENABLED(CONFIG_SERVICE_MMC)
     case CMD_MMC:
         HSS_BootSelectMMC();
         break;
     case CMD_SDCARD:
-        HSS_BootSelectMMC();
+        HSS_BootSelectSDCARD();
         break;
 #endif
 

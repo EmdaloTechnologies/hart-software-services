@@ -271,11 +271,14 @@ static bool getBootImageFromMMC_(struct HSS_BootImage **ppBootImage)
     // boot header into our structure, for subsequent use
     mHSS_DEBUG_PRINTF(LOG_NORMAL, "Preparing to copy from MMC to DDR ..." CRLF);
 
-    assert(HSS_MMCInit());
+    result = HSS_MMCInit();
     size_t srcLBAOffset = 0u;
 
+    if (!result) {
+        mHSS_DEBUG_PRINTF(LOG_ERROR, "HSS_MMCInit() failed" CRLF);
+    }
 # if (IS_ENABLED(CONFIG_SERVICE_BOOT_MMC_USE_GPT))
-    {
+    else {
         HSS_GPT_t gpt;
 
         GPT_RegisterReadBlockFunction(HSS_MMC_ReadBlock);
@@ -303,13 +306,13 @@ static bool getBootImageFromMMC_(struct HSS_BootImage **ppBootImage)
             }
         }
     }
-#endif
 
     if (!result) {
         mHSS_DEBUG_PRINTF(LOG_ERROR, "GPT_PartitionIdToLBAOffset() failed - using offset %lu" CRLF, srcLBAOffset);
     } else {
         //mHSS_DEBUG_PRINTF(LOG_WARN, "GPT_PartitionIdToLBAOffset() returned %lu" CRLF, srcLBAOffset);
     }
+#endif
 
     //
     // Even if we have GPT enabled and it fails to find a GPT parttion, we'll still
