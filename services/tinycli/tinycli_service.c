@@ -25,7 +25,9 @@
 #include "uart_helper.h"
 #include "mpfs_reg_map.h"
 #include "hss_boot_service.h"
+#include "hss_clock.h"
 #include "usbdmsc_service.h"
+#include "wdog_service.h"
 
 #include "drivers/mss_uart/mss_uart.h"
 
@@ -101,6 +103,9 @@ ssize_t readStringLen = 0;
 
 const char* lineHeader = ">> ";
 
+#define READLINE_IDLE_TIMEOUT (ONE_SEC * 60u * 10u) /* 10 minutes */
+
+static HSSTicks_t readlineIdleTime = 0u;
 static void tinycli_readline_onEntry(struct StateMachine * const pMyMachine)
 {
     (void)pMyMachine;
@@ -108,6 +113,8 @@ static void tinycli_readline_onEntry(struct StateMachine * const pMyMachine)
     //myBuffer[0] = '\0';
     readStringLen = 0u;
     mHSS_PUTS(lineHeader);
+
+    readlineIdleTime = HSS_GetTime();
 }
 
 static void tinycli_readline_handler(struct StateMachine * const pMyMachine)
@@ -117,6 +124,16 @@ static void tinycli_readline_handler(struct StateMachine * const pMyMachine)
 #if IS_ENABLED(CONFIG_SERVICE_TINYCLI_MONITOR)
     HSS_TinyCLI_RunMonitors();
 #endif
+
+    if (HSS_Timer_IsElapsed(readlineIdleTime, READLINE_IDLE_TIMEOUT)) {
+#if IS_ENABLED(CONFIG_SERVICE_WDOG)
+         HSS_Wdog_Reboot(HSS_HART_E51);
+         HSS_Wdog_Reboot(HSS_HART_U54_1);
+         HSS_Wdog_Reboot(HSS_HART_U54_2);
+         HSS_Wdog_Reboot(HSS_HART_U54_3);
+         HSS_Wdog_Reboot(HSS_HART_U54_4);
+#endif
+    }
 
     static bool escapeActive = false;
 

@@ -287,7 +287,7 @@ const struct InitFunction /*@null@*/ globalInitFunctions[] = {
     { "IPI_QueuesInit",            IPI_QueuesInit,            false, false },
 #if IS_ENABLED(CONFIG_SERVICE_BOOT)
     { "HSS_PMP_Init",              HSS_PMP_Init,              false, false },
-    { "HSS_BootInit",              HSS_BootInit,              false, true },
+    { "HSS_BootInit",              HSS_BootInit,              false, false },
 #endif
 };
 const size_t spanOfGlobalInitFunctions = ARRAY_SIZE(globalInitFunctions);
