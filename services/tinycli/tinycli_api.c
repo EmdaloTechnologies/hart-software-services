@@ -84,6 +84,7 @@ enum CmdId {
 #if IS_ENABLED(CONFIG_SERVICE_MMC) && (IS_ENABLED(CONFIG_SERVICE_QSPI) || IS_ENABLED(CONFIG_SERVICE_PAYLOAD) || IS_ENABLED(CONFIG_SERVICE_SPI))
     CMD_EMMC,
     CMD_MMC,
+    CMD_SDCARD,
 #endif
 #if IS_ENABLED(CONFIG_SERVICE_PAYLOAD) && (IS_ENABLED(CONFIG_SERVICE_MMC) || IS_ENABLED(CONFIG_SERVICE_QSPI) || IS_ENABLED(CONFIG_SERVICE_SPI))
     CMD_PAYLOAD,
@@ -126,6 +127,7 @@ const struct tinycli_key cmdKeys[] = {
 #if IS_ENABLED(CONFIG_SERVICE_MMC) && (IS_ENABLED(CONFIG_SERVICE_QSPI) || IS_ENABLED(CONFIG_SERVICE_PAYLOAD))
     { CMD_EMMC,    "EMMC",    "Select boot via MMC." },
     { CMD_MMC,     "MMC",     "Select boot via MMC." },
+    { CMD_SDCARD,  "SDCARD",  "Select boot via SDCARD." },
 #endif
 #if IS_ENABLED(CONFIG_SERVICE_PAYLOAD) && (IS_ENABLED(CONFIG_SERVICE_MMC) || IS_ENABLED(CONFIG_SERVICE_QSPI))
     { CMD_PAYLOAD, "PAYLOAD", "Select boot via payload." },
@@ -187,6 +189,7 @@ static struct tinycli_command commands[] = {
 #if IS_ENABLED(CONFIG_SERVICE_MMC) && (IS_ENABLED(CONFIG_SERVICE_QSPI) || IS_ENABLED(CONFIG_SERVICE_PAYLOAD) || IS_ENABLED(CONFIG_SERVICE_SPI))
     { CMD_EMMC,    true,  tinyCLI_CmdHandler_ },
     { CMD_MMC,     true,  tinyCLI_CmdHandler_ },
+    { CMD_SDCARD,  true,  tinyCLI_CmdHandler_ },
 #endif
 #if IS_ENABLED(CONFIG_SERVICE_PAYLOAD) && (IS_ENABLED(CONFIG_SERVICE_MMC) || IS_ENABLED(CONFIG_SERVICE_QSPI) || IS_ENABLED(CONFIG_SERVICE_SPI))
     { CMD_PAYLOAD, true,  tinyCLI_CmdHandler_ },
@@ -845,6 +848,9 @@ static void tinyCLI_CmdHandler_(int tokenId)
 
 #if IS_ENABLED(CONFIG_SERVICE_MMC) && (IS_ENABLED(CONFIG_SERVICE_QSPI) || IS_ENABLED(CONFIG_SERVICE_PAYLOAD) || IS_ENABLED(CONFIG_SERVICE_SPI))
     case CMD_MMC:
+        HSS_BootSelectMMC();
+        break;
+    case CMD_SDCARD:
         HSS_BootSelectMMC();
         break;
 #endif

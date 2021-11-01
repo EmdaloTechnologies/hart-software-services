@@ -623,6 +623,7 @@ static void boot_opensbi_init_handler(struct StateMachine * const pMyMachine)
                     if (pBootImage->hart[peer-1].flags & BOOT_FLAG_SKIP_OPENSBI) {
                         mHSS_DEBUG_PRINTF(LOG_NORMAL, "%s::u54_%u:goto %p" CRLF, pMyMachine->pMachineName,
                             peer, pBootImage->hart[peer-1].entryPoint);
+
                         result = IPI_MessageDeliver(pInstanceData->msgIndexAux[peer-1], peer,
                             IPI_MSG_GOTO,
                             pBootImage->hart[peer-1].privMode,
@@ -632,12 +633,19 @@ static void boot_opensbi_init_handler(struct StateMachine * const pMyMachine)
                     } else {
                         mHSS_DEBUG_PRINTF(LOG_NORMAL, "%s::u54_%u:sbi_init %p" CRLF, pMyMachine->pMachineName,
                             peer, pBootImage->hart[peer-1].entryPoint);
+
                         result = IPI_MessageDeliver(pInstanceData->msgIndexAux[peer-1], peer,
                             IPI_MSG_OPENSBI_INIT,
                             pBootImage->hart[peer-1].privMode,
                             (void *)pBootImage->hart[peer-1].entryPoint,
                             (void *)pInstanceData->ancilliaryData);
-                        assert(result);
+
+                        if (!result) {
+                            mHSS_DEBUG_PRINTF(LOG_ERROR, "%s::u54_%u:sbi_init failed" CRLF,
+                                pMyMachine->pMachineName, peer);
+
+                            pMyMachine->state = BOOT_ERROR;
+                        }
                     }
                 }
                 pInstanceData->iterator++;
@@ -659,6 +667,7 @@ static void boot_opensbi_init_onExit(struct StateMachine * const pMyMachine)
 
     if (pBootImage->hart[target-1].entryPoint) {
         bool result;
+
         result = IPI_MessageAlloc(&(pInstanceData->msgIndex));
         assert(result);
 
@@ -668,20 +677,24 @@ static void boot_opensbi_init_onExit(struct StateMachine * const pMyMachine)
         if (pBootImage->hart[target-1].flags & BOOT_FLAG_SKIP_OPENSBI) {
             mHSS_DEBUG_PRINTF(LOG_NORMAL, "%s::u54_%u:goto %p" CRLF, pMyMachine->pMachineName,
                 target, pBootImage->hart[target-1].entryPoint);
+
             result = IPI_MessageDeliver(pInstanceData->msgIndex, target,
                 IPI_MSG_GOTO,
                 pBootImage->hart[target-1].privMode,
                 (void *)pBootImage->hart[target-1].entryPoint,
                 (void *)pInstanceData->ancilliaryData);
+
             assert(result);
         } else {
             mHSS_DEBUG_PRINTF(LOG_NORMAL, "%s::u54_%u:sbi_init %p" CRLF, pMyMachine->pMachineName,
                 target, pBootImage->hart[target-1].entryPoint);
+
             result = IPI_MessageDeliver(pInstanceData->msgIndex, target,
                 IPI_MSG_OPENSBI_INIT,
                 pBootImage->hart[target-1].privMode,
                 (void *)pBootImage->hart[target-1].entryPoint,
                 (void *)pInstanceData->ancilliaryData);
+
             assert(result);
         }
     } else {

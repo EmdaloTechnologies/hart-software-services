@@ -347,10 +347,17 @@ static bool getBootImageFromMMC_(struct HSS_BootImage **ppBootImage)
     return result;
 }
 
+void HSS_BootSelectSDCARD(void)
+{
+    mHSS_DEBUG_PRINTF(LOG_NORMAL, "Selecting SDCARD as boot source ..." CRLF);
+    getBootImageFunction = getBootImageFromMMC_;
+    HSS_MMC_SelectSDCARD();
+}
 void HSS_BootSelectMMC(void)
 {
     mHSS_DEBUG_PRINTF(LOG_NORMAL, "Selecting MMC as boot source ..." CRLF);
     getBootImageFunction = getBootImageFromMMC_;
+    HSS_MMC_SelectMMC();
 }
 
 static bool getBootImageFromQSPI_(struct HSS_BootImage **ppBootImage)
