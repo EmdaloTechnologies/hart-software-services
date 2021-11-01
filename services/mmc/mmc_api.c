@@ -83,6 +83,18 @@
 
 #include "mss_sysreg.h"
 
+static bool mmc_selectSDCARD = true;
+
+void HSS_MMC_SelectSDCARD(void)
+{
+    mmc_selectSDCARD = true;
+}
+
+void HSS_MMC_SelectMMC(void)
+{
+    mmc_selectSDCARD = false;
+}
+
 static void mmc_reset_block(void)
 {
     SYSREG->SUBBLK_CLOCK_CR |=
@@ -194,13 +206,15 @@ bool HSS_MMCInit(void)
         mmc_reset_block();
 
 #if defined(CONFIG_SERVICE_MMC_MODE_SDCARD)
-        mHSS_DEBUG_PRINTF(LOG_STATUS, "Attempting to select SDCARD ... ");
-        mmc_initialized = mmc_init_sdcard();
-        mHSS_DEBUG_PRINTF_EX("%s" CRLF, mmc_initialized ? "Passed" : "Failed");
-
+        if (mmc_selectSDCARD) {
+            mHSS_DEBUG_PRINTF(LOG_STATUS, "Attempting to select SDCARD ... ");
+            mmc_initialized = mmc_init_sdcard();
+            mHSS_DEBUG_PRINTF_EX("%s" CRLF, mmc_initialized ? "Passed" : "Failed");
+        }
 #endif
 #if defined(CONFIG_SERVICE_MMC_MODE_EMMC)
-        if (!mmc_initialized) {
+        //if (!mmc_initialized) {
+        else if (!mmc_selectSDCARD) {
             mHSS_DEBUG_PRINTF(LOG_STATUS, "Attempting to select eMMC ... ");
             mmc_initialized = mmc_init_emmc();
             mHSS_DEBUG_PRINTF_EX("%s" CRLF, mmc_initialized ? "Passed" : "Failed");

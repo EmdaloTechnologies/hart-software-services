@@ -1,6 +1,5 @@
 #ifndef HSS_VERSION_H
 #define HSS_VERSION_H
-
 /*******************************************************************************
  * Copyright 2019-2021 Microchip FPGA Embedded Systems Solutions.
  *
@@ -41,6 +40,8 @@ extern "C" {
 #define HSS_VERSION_MAJOR 0
 #define HSS_VERSION_MINOR 99
 #define HSS_VERSION_PATCH 24
+
+#define VENDOR_STRING "-s100-02"
 
 #ifdef __cplusplus
 }
