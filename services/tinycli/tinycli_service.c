@@ -127,11 +127,12 @@ static void tinycli_readline_handler(struct StateMachine * const pMyMachine)
 
     if (HSS_Timer_IsElapsed(readlineIdleTime, READLINE_IDLE_TIMEOUT)) {
 #if IS_ENABLED(CONFIG_SERVICE_WDOG)
-         HSS_Wdog_Reboot(HSS_HART_E51);
-         HSS_Wdog_Reboot(HSS_HART_U54_1);
-         HSS_Wdog_Reboot(HSS_HART_U54_2);
-         HSS_Wdog_Reboot(HSS_HART_U54_3);
-         HSS_Wdog_Reboot(HSS_HART_U54_4);
+        mHSS_DEBUG_PRINTF(LOG_ERROR, "CLI Inactivity Timeout - forcing reboot" CRLF);
+        HSS_Wdog_Reboot(HSS_HART_E51);
+        HSS_Wdog_Reboot(HSS_HART_U54_1);
+        HSS_Wdog_Reboot(HSS_HART_U54_2);
+        HSS_Wdog_Reboot(HSS_HART_U54_3);
+        HSS_Wdog_Reboot(HSS_HART_U54_4);
 #endif
     }
 
