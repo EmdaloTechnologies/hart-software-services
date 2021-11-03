@@ -955,6 +955,12 @@ bool HSS_TinyCLI_IndicatePostInit(void)
     return postInit;
 }
 
+static bool postBoot = false;
+bool HSS_TinyCLI_IsPostBoot(void)
+{
+    return postBoot;
+}
+
 bool HSS_TinyCLI_Parser(void)
 {
     bool keyPressedFlag = false;
@@ -987,6 +993,7 @@ bool HSS_TinyCLI_Parser(void)
 #  endif
 #endif
         }
+        postBoot = true;
     }
 
     return true;
