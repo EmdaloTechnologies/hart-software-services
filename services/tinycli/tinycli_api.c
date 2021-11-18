@@ -203,6 +203,7 @@ static struct tinycli_command commands[] = {
 };
 
 static bool postInit = false;
+static bool postBoot = false;
 
 
 /***********************************************************************/
@@ -583,6 +584,7 @@ static bool tinyCLI_Boot_(void)
         }
     } else {
         result = true; // boot on its own
+        postBoot = true;
     }
 
     if (usageError) {
@@ -955,7 +957,6 @@ bool HSS_TinyCLI_IndicatePostInit(void)
     return postInit;
 }
 
-static bool postBoot = false;
 bool HSS_TinyCLI_IsPostBoot(void)
 {
     return postBoot;
