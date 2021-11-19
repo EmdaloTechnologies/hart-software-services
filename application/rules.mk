@@ -180,10 +180,10 @@ endif
 	@$(ECHO) " CC        $@";
 	$(CMD_PREFIX)$(CC) $(CFLAGS) $(defs) -D__ASSEMBLY__=1 -c $(INCLUDES) $< -o $@
 
-%.hex: %.elf
-	@$(ECHO) " HEX       $@";
-	$(CMD_PREFIX)$(OBJCOPY) -O ihex $< $@
-	$(CMD_PREFIX)$(OBJCOPY) -O ihex $< Default/$@
+#%.hex: %.elf
+#	@$(ECHO) " HEX       $@";
+#	$(CMD_PREFIX)$(OBJCOPY) -O ihex $< $@
+#	$(CMD_PREFIX)$(OBJCOPY) -O ihex $< Default/$@
 
 %.lss: %.elf
 	@$(ECHO) " LSS       $@";
