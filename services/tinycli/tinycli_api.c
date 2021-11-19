@@ -972,6 +972,7 @@ bool HSS_TinyCLI_Parser(void)
 
     if (!keyPressedFlag) {
         mHSS_FANCY_PUTS(LOG_NORMAL, "CLI boot interrupt timeout" CRLF);
+        postBoot = true;
     } else {
         mHSS_FANCY_PUTS(LOG_NORMAL, "Type HELP for list of commands" CRLF);
         while (!quitFlag) {
@@ -994,7 +995,6 @@ bool HSS_TinyCLI_Parser(void)
 #  endif
 #endif
         }
-        postBoot = true;
     }
 
     return true;
