@@ -88,11 +88,13 @@ static bool mmc_selectSDCARD = true;
 void HSS_MMC_SelectSDCARD(void)
 {
     mmc_selectSDCARD = true;
+    HSS_MMCInit();
 }
 
 void HSS_MMC_SelectMMC(void)
 {
     mmc_selectSDCARD = false;
+    HSS_MMCInit();
 }
 
 static void mmc_reset_block(void)
@@ -195,20 +197,26 @@ static bool mmc_init_sdcard(void)
 }
 #endif
 
-static bool mmc_initialized = false;
+enum mmc_init_type
+{
+    MMC_UNINITIALIZED,
+    eMMC_INITIALIZED,
+    SDCARD_INITIALIZED
+} mmc_initialized;
+
+static int perf_ctr_index = PERF_CTR_UNINITIALIZED;
 bool HSS_MMCInit(void)
 {
     bool result = false;
 
-    if (!mmc_initialized) {
-        int perf_ctr_index = PERF_CTR_UNINITIALIZED;
+    {
         HSS_PerfCtr_Allocate(&perf_ctr_index, "MMC Init");
         mmc_reset_block();
 
 #if defined(CONFIG_SERVICE_MMC_MODE_SDCARD)
         if (mmc_selectSDCARD) {
             mHSS_DEBUG_PRINTF(LOG_STATUS, "Attempting to select SDCARD ... ");
-            mmc_initialized = mmc_init_sdcard();
+            mmc_initialized = mmc_init_sdcard() ? SDCARD_INITIALIZED : MMC_UNINITIALIZED;
             mHSS_DEBUG_PRINTF_EX("%s" CRLF, mmc_initialized ? "Passed" : "Failed");
         }
 #endif
@@ -216,14 +224,14 @@ bool HSS_MMCInit(void)
         //if (!mmc_initialized) {
         else if (!mmc_selectSDCARD) {
             mHSS_DEBUG_PRINTF(LOG_STATUS, "Attempting to select eMMC ... ");
-            mmc_initialized = mmc_init_emmc();
+            mmc_initialized = mmc_init_emmc() ? eMMC_INITIALIZED : MMC_UNINITIALIZED;
             mHSS_DEBUG_PRINTF_EX("%s" CRLF, mmc_initialized ? "Passed" : "Failed");
         }
 #endif
         HSS_PerfCtr_Lap(perf_ctr_index);
     }
 
-    result = mmc_initialized;
+    result = mmc_initialized ? true : false;
 
     return result;
 }

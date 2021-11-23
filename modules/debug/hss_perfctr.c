@@ -38,7 +38,8 @@ bool HSS_PerfCtr_Allocate(int *pIdx, char const * pName)
 #if IS_ENABLED(CONFIG_DEBUG_PERF_CTRS)
     if ((*pIdx >= 0) && (*pIdx < ARRAY_SIZE(perfCtrs))) {
         if ((perfCtrs[*pIdx].isAllocated) && (perfCtrs[*pIdx].pName == pName)) {
-            mHSS_DEBUG_PRINTF(LOG_ERROR, "found already allocated perf ctr for >>%s<<" CRLF, pName);
+            //mHSS_DEBUG_PRINTF(LOG_ERROR, "found already allocated perf ctr for >>%s<<" CRLF, pName);
+            perfCtrs[*pIdx].startTime = HSS_GetTime();
             result = true;
         }
     } else {

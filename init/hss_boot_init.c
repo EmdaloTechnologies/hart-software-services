@@ -108,6 +108,7 @@ static HSS_GetBootImageFnPtr_t getBootImageFunction =
 #    error Unable to determine boot mechanism
 #endif
 
+static int boot_init_perf_ctr_index = PERF_CTR_UNINITIALIZED;
 bool HSS_BootInit(void)
 {
     bool result = false;
@@ -116,8 +117,7 @@ bool HSS_BootInit(void)
 
     mHSS_DEBUG_PRINTF(LOG_NORMAL, "Initializing Boot Image.." CRLF);
 
-    int perf_ctr_index = PERF_CTR_UNINITIALIZED;
-    HSS_PerfCtr_Allocate(&perf_ctr_index, "Boot Image Init");
+    HSS_PerfCtr_Allocate(&boot_init_perf_ctr_index, "Boot Image Init");
 
 #if IS_ENABLED(CONFIG_SERVICE_BOOT)
     result = getBootImageFunction(&pBootImage);
@@ -189,7 +189,7 @@ bool HSS_BootInit(void)
     }
 #endif
 
-    HSS_PerfCtr_Lap(perf_ctr_index);
+    HSS_PerfCtr_Lap(boot_init_perf_ctr_index);
     return result;
 }
 
@@ -260,6 +260,7 @@ static inline bool verifyMagic_(struct HSS_BootImage const * const pBootImage)
 struct HSS_BootImage bootImage __attribute__((aligned(8)));
 #endif
 
+static int mmc_init_perf_ctr_index = PERF_CTR_UNINITIALIZED;
 static bool getBootImageFromMMC_(struct HSS_BootImage **ppBootImage)
 {
     bool result = false;
@@ -331,13 +332,12 @@ static bool getBootImageFromMMC_(struct HSS_BootImage **ppBootImage)
             if (!result) {
                 mHSS_DEBUG_PRINTF(LOG_ERROR, "verifyMagic_() failed" CRLF);
             } else {
-                int perf_ctr_index = PERF_CTR_UNINITIALIZED;
-                HSS_PerfCtr_Allocate(&perf_ctr_index, "Boot Image MMC Copy");
+                HSS_PerfCtr_Allocate(&mmc_init_perf_ctr_index, "Boot Image MMC Copy");
                 result = copyBootImageToDDR_(&bootImage,
                     (char *)(CONFIG_SERVICE_BOOT_DDR_TARGET_ADDR), srcLBAOffset * GPT_LBA_SIZE,
                     HSS_MMC_ReadBlock);
                 *ppBootImage = (struct HSS_BootImage *)(CONFIG_SERVICE_BOOT_DDR_TARGET_ADDR);
-                HSS_PerfCtr_Lap(perf_ctr_index);
+                HSS_PerfCtr_Lap(mmc_init_perf_ctr_index);
 
                if (!result) {
                    mHSS_DEBUG_PRINTF(LOG_ERROR, "copyBootImageToDDR_() failed" CRLF);

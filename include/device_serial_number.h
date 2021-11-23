@@ -1,5 +1,6 @@
-#ifndef HSS_VERSION_H
-#define HSS_VERSION_H
+#ifndef DEVICE_SERIAL_NUMBER_H
+#define DEVICE_SERIAL_NUMBER_H
+
 /*******************************************************************************
  * Copyright 2019-2021 Microchip FPGA Embedded Systems Solutions.
  *
@@ -24,24 +25,16 @@
  * IN THE SOFTWARE.
  *
  *
- * Hart Software Services - HSS Version
+ * Hart Software Services - Serial Number wrapper
  *
- */
-
-/**
- * \file MPFS HSS Embedded Software - Version
- * \brief MPFS HSS Embedded Software - Version
  */
 
 #ifdef __cplusplus
 extern "C" {
 #endif
 
-#define HSS_VERSION_MAJOR 0
-#define HSS_VERSION_MINOR 99
-#define HSS_VERSION_PATCH 24
-
-#define VENDOR_STRING "-s100-07"
+bool Device_Serial_Number_Init(void);
+bool Get_Device_Serial_Number(uint8_t **ppBuffer, size_t* pLen);
 
 #ifdef __cplusplus
 }

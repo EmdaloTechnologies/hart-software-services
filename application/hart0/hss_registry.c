@@ -251,6 +251,7 @@ const size_t spanOfPGlobalStateMachines = ARRAY_SIZE(pGlobalStateMachines);
 #include "hss_boot_pmp.h"
 #include "hss_sys_setup.h"
 #include "hss_board_init.h"
+#include "device_serial_number.h"
 #if IS_ENABLED(CONFIG_MEMTEST)
 #  include "hss_memtest.h"
 #endif
@@ -269,6 +270,7 @@ const struct InitFunction /*@null@*/ globalInitFunctions[] = {
     { "HSS_LogoInit",              HSS_LogoInit,              false, false },
 #endif
     { "HSS_E51_Banner",            HSS_E51_Banner,            false, false },
+    { "Device_Serial_Number_Init", Device_Serial_Number_Init, false, false },
     { "HSS_DDRPrintSegConfig",     HSS_DDRPrintSegConfig,     false, false },
     { "HSS_DDRPrintL2CacheConfig", HSS_DDRPrintL2CacheConfig, false, false },
 #if IS_ENABLED(CONFIG_MEMTEST)

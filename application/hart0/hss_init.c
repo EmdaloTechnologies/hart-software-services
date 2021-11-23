@@ -44,6 +44,7 @@
 
 #include "hss_memcpy_via_pdma.h"
 #include "mpfs_hal_version.h"
+#include "mss_sys_services.h"
 
 /**
  * \brief Main Initialization Function
@@ -114,8 +115,7 @@ bool HSS_ZeroDDR(void)
     }
 #endif
 
-    mb();
-    mb_i();
+    __sync_synchronize();
 
     return true;
 }
@@ -132,8 +132,7 @@ bool HSS_ZeroTIMs(void)
     memset((void*)U54_4_ITIM_START, 0, U54_4_ITIM_END - U54_4_ITIM_START); /* 28KiB */
 #endif
 
-    mb();
-    mb_i();
+    __sync_synchronize();
 
     return true;
 }

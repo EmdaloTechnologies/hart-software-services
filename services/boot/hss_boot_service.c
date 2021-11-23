@@ -57,7 +57,7 @@
 
 /* Timeouts */
 #define BOOT_SETUP_PMP_COMPLETE_TIMEOUT (ONE_SEC * 5u)
-#define BOOT_WAIT_TIMEOUT               (ONE_SEC * 5u)
+#define BOOT_WAIT_TIMEOUT               (ONE_SEC * 2u)
 
 #define BOOT_SUB_CHUNK_SIZE 256u
 
@@ -399,6 +399,7 @@ static void boot_setup_pmp_handler(struct StateMachine * const pMyMachine)
 static void boot_setup_pmp_complete_onEntry(struct StateMachine * const pMyMachine)
 {
     //mHSS_DEBUG_PRINTF(LOG_NORMAL, "%s::Checking for IPI ACKs: - -" CRLF, pMyMachine->pMachineName);
+    pMyMachine->startTime = HSS_GetTime();
 }
 
 static void boot_setup_pmp_complete_handler(struct StateMachine * const pMyMachine)
@@ -617,8 +618,8 @@ static void boot_opensbi_init_handler(struct StateMachine * const pMyMachine)
                     result = IPI_MessageAlloc(&(pInstanceData->msgIndexAux[peer-1]));
                     assert(result);
 
-                    mb();
-                    mb_i();
+                    //mb(); // TODO
+                    //mb_i(); // TODO
 
                     if (pBootImage->hart[peer-1].flags & BOOT_FLAG_SKIP_OPENSBI) {
                         mHSS_DEBUG_PRINTF(LOG_NORMAL, "%s::u54_%u:goto %p" CRLF, pMyMachine->pMachineName,

@@ -201,9 +201,13 @@ static void tinycli_readline_handler(struct StateMachine * const pMyMachine)
                 memcpy(myPrevBuffer, myBuffer, readStringLen+1);
             } else {
                 // if just hit enter, as a convenience, reuse last command (a la GDB)
+                // except if last command was "BOOT"
 		//mHSS_DEBUG_PRINTF(LOG_WARN, "Convenience: copying >>%s<< into myBuffer" CRLF, myPrevBuffer);
-		readStringLen = strlen(myPrevBuffer);
-                memcpy(myBuffer, myPrevBuffer, readStringLen+1);
+		size_t prevStrLen = strlen(myPrevBuffer);
+                if (strncasecmp(myPrevBuffer, "boot", prevStrLen) != 0) {
+		    readStringLen = strlen(myPrevBuffer);
+                    memcpy(myBuffer, myPrevBuffer, readStringLen+1);
+                }
             }
             pMyMachine->state = TINYCLI_PARSELINE;
             break;

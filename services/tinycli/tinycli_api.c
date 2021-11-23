@@ -22,6 +22,7 @@
 #include <stdlib.h>
 
 #include "hss_boot_init.h"
+#include "hss_boot_service.h"
 #include "gpt.h"
 #include "hss_init.h"
 #include "hss_state_machine.h"
@@ -584,7 +585,14 @@ static bool tinyCLI_Boot_(void)
         }
     } else {
         result = true; // boot on its own
-        postBoot = true;
+
+        if (postBoot) {
+            if (HSS_BootInit()) {
+                HSS_Boot_RestartCore(HSS_HART_ALL);
+            }
+        } else {
+            postBoot = true;
+        }
     }
 
     if (usageError) {
