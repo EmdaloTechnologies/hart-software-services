@@ -41,7 +41,7 @@ extern "C" {
 #define HSS_VERSION_MINOR 99
 #define HSS_VERSION_PATCH 24
 
-#define VENDOR_STRING "-s100-07"
+#define VENDOR_STRING "-s100-08"
 
 #ifdef __cplusplus
 }
