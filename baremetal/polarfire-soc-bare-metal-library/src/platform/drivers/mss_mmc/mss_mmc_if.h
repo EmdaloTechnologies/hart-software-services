@@ -92,12 +92,7 @@ typedef enum
     }
   @endcode
  */
-cif_response_t cif_send_cmd
-(
-    uint32_t cmd_arg,
-    uint32_t cmd_type,
-    uint8_t resp_type
-);
+cif_response_t cif_send_cmd(uint32_t cmd_arg, uint32_t cmd_type, uint8_t resp_type);
 
 /***************************************************************************//**
 
@@ -136,22 +131,9 @@ cif_response_t cif_send_cmd
     send_mmc_cmd(RCA_VALUE, MMC_CMD_13_SEND_STATUS, MMC_RESPONSE_R1, CHECK_IF_CMD_SENT_NO);
   @endcode
  */
-void send_mmc_cmd
-(
-    uint32_t cmd_arg,
-    uint32_t cmd_type,
-    uint8_t resp_type,
-    cmd_response_check_options cmd_option
-);
+void send_mmc_cmd(uint32_t cmd_arg, uint32_t cmd_type, uint8_t resp_type, cmd_response_check_options cmd_option);
 /******************************************************************************/
-cif_response_t cif_send_cq_direct_command
-(
-        uint8_t *desc_base_addr,
-        uint32_t cmd_arg,
-        uint32_t cmd_type,
-        uint8_t resp_type,
-        uint8_t task_id
-);
+cif_response_t cif_send_cq_direct_command(uint8_t *desc_base_addr, uint32_t cmd_arg, uint32_t cmd_type, uint8_t resp_type, uint8_t task_id);
 /******************************************************************************/
 
 

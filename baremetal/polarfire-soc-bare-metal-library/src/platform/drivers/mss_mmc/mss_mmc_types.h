@@ -21,6 +21,8 @@ extern "C"
 
 #include "hal/cpu_types.h"
 
+#define MMC_MAX_SPIN_TIMEOUT            1000000u
+
 /***************************************************************************//**
  * Macro Definitions
  */

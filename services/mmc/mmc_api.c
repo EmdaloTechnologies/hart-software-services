@@ -216,15 +216,15 @@ bool HSS_MMCInit(void)
 #if defined(CONFIG_SERVICE_MMC_MODE_SDCARD)
         if (mmc_selectSDCARD) {
             mHSS_DEBUG_PRINTF(LOG_STATUS, "Attempting to select SDCARD ... ");
-            mmc_initialized = mmc_init_sdcard() ? SDCARD_INITIALIZED : MMC_UNINITIALIZED;
+            mmc_initialized = mmc_init_sdcard(); // ? SDCARD_INITIALIZED : MMC_UNINITIALIZED;
             mHSS_DEBUG_PRINTF_EX("%s" CRLF, mmc_initialized ? "Passed" : "Failed");
         }
 #endif
 #if defined(CONFIG_SERVICE_MMC_MODE_EMMC)
-        //if (!mmc_initialized) {
-        else if (!mmc_selectSDCARD) {
+        if (!mmc_initialized) {
+        //else if (!mmc_selectSDCARD) {
             mHSS_DEBUG_PRINTF(LOG_STATUS, "Attempting to select eMMC ... ");
-            mmc_initialized = mmc_init_emmc() ? eMMC_INITIALIZED : MMC_UNINITIALIZED;
+            mmc_initialized = mmc_init_emmc(); // ? eMMC_INITIALIZED : MMC_UNINITIALIZED;
             mHSS_DEBUG_PRINTF_EX("%s" CRLF, mmc_initialized ? "Passed" : "Failed");
         }
 #endif

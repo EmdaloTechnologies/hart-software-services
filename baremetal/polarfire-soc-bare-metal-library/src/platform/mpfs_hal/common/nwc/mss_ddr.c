@@ -1,5 +1,3 @@
-#define SKIP_VERIFY_PATTERN_IN_CACHE
-
 /*******************************************************************************
  * Copyright 2019-2021 Microchip FPGA Embedded Systems Solutions.
  *

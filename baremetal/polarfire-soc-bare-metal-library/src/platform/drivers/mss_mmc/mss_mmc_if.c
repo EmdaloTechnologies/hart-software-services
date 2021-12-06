@@ -36,12 +36,7 @@ static cif_response_t cq_execute_task(uint8_t task_id);
  * cif_send_cmd()
  * See ".h" for details of how to use this function.
  */
-cif_response_t cif_send_cmd
-(
-    uint32_t cmd_arg,
-    uint32_t cmd_type,
-    uint8_t resp_type
-)
+cif_response_t cif_send_cmd(uint32_t cmd_arg, uint32_t cmd_type, uint8_t resp_type)
 {
     uint32_t trans_status_isr;
     cif_response_t ret_status = TRANSFER_IF_FAIL;
@@ -101,21 +96,17 @@ cif_response_t cif_send_cmd
  * eMMC/SD device and waits until the core indicates that the command has been
  * transferred successfully.
  */
-void send_mmc_cmd
-(
-    uint32_t cmd_arg,
-    uint32_t cmd_type,
-    uint8_t resp_type,
-    cmd_response_check_options cmd_option
-)
+void send_mmc_cmd(uint32_t cmd_arg, uint32_t cmd_type, uint8_t resp_type, cmd_response_check_options cmd_option)
 {
     uint32_t command_information;
     uint32_t srs9, trans_status_isr;
 
     /* check if command line is not busy */
+    uint32_t myTimeout = MMC_MAX_SPIN_TIMEOUT;
     do
     {
         srs9 = MMC->SRS09;
+        myTimeout--; if (myTimeout == MMC_CLEAR){ return; }
     }while ((srs9 & SRS9_CMD_INHIBIT_CMD) != NO_CMD_INHIBIT);
 
     command_information = process_request_checkresptype(resp_type);
@@ -127,9 +118,11 @@ void send_mmc_cmd
     {
         /* only need to wait around if expecting no response */
         case CHECK_IF_CMD_SENT_POLL:
+            myTimeout = MMC_MAX_SPIN_TIMEOUT;
             do
             {
                 trans_status_isr = MMC->SRS12;
+                myTimeout--; if (myTimeout == MMC_CLEAR){ return; }
             }while (((SRS12_COMMAND_COMPLETE | SRS12_ERROR_INTERRUPT) & trans_status_isr) == MMC_CLEAR);
             break;
         case CHECK_IF_CMD_SENT_INT:
@@ -311,9 +304,11 @@ static cif_response_t cq_execute_task(uint8_t task_id)
 
     while (value--);
 
+    uint32_t myTimeout = MMC_MAX_SPIN_TIMEOUT;
     do
     {
         trans_status_isr = MMC->SRS12;
+        myTimeout--; if (myTimeout == MMC_CLEAR){ return TRANSFER_IF_FAIL; }
     }while (((SRS12_ERROR_INTERRUPT | SRS12_CMD_QUEUING_INT) & trans_status_isr) == MMC_CLEAR);
 
     if ((trans_status_isr & (SRS12_ERROR_INTERRUPT | SRS12_CMD_QUEUING_INT)) != MMC_CLEAR)
