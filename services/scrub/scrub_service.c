@@ -88,6 +88,8 @@ extern const uint64_t __u54_1_itim_start,    __u54_1_itim_end;
 extern const uint64_t __u54_2_itim_start,    __u54_2_itim_end;
 extern const uint64_t __u54_3_itim_start,    __u54_3_itim_end;
 extern const uint64_t __u54_4_itim_start,    __u54_4_itim_end;
+const uint64_t        sram_start = 0x60000000;
+const uint64_t        sram_end = 0x60001000;
 
 const struct {
 	uintptr_t baseAddr;
@@ -103,6 +105,7 @@ const struct {
     { (uintptr_t)&__ncddrhi_start,       (uintptr_t)&__ncddrhi_end },
 #endif
     { (uintptr_t)&__dtim_start,          (uintptr_t)&__dtim_end },
+    { (uintptr_t)sram_start,             (uintptr_t)sram_end },
     //{ (uintptr_t)&__e51itim_start,       (uintptr_t)&__e51itim_end },
     //{ (uintptr_t)&__u54_1_itim_start,    (uintptr_t)&__u54_1_itim_end },
     //{ (uintptr_t)&__u54_2_itim_start,    (uintptr_t)&__u54_2_itim_end },
