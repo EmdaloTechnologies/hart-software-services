@@ -90,26 +90,15 @@ config FDT_TIMER
 config FDT_TIMER_MTIMER
 	def_bool y
 
-config SBI_ECALL_TIME
-	def_bool y
-
-config SBI_ECALL_RFENCE
-	def_bool y
-
-config SBI_ECALL_IPI
-	def_bool y
-
-config SBI_ECALL_HSM
-	def_bool y
-
-config SBI_ECALL_SRST
-	def_bool y
-
+# Override upstream defaults for features not needed on MPFS
 config SBI_ECALL_PMU
 	def_bool n
 
-config SBI_ECALL_LEGACY
-	def_bool y
+config SBI_ECALL_CPPC
+	def_bool n
 
-config SBI_ECALL_VENDOR
-	def_bool y
+config SBI_ECALL_MPXY
+	def_bool n
+
+config SBIUNIT
+	def_bool n
