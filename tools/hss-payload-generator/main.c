@@ -62,9 +62,10 @@ static void intro_banner(void)
 
 static void print_usage(char **argv)
 {
-	printf("Usage: %s [-v] [-w] [-h] [[-c <configfile.yaml> <output.bin>] [-p <private-key.pem>] ] [-d <output.bin> [-u <public-key.pem>]\n\n", argv[0]);
+	printf("Usage: %s [-v] [-w] [-h] [[-c <configfile.yaml> <output.bin>] [-p <private-key.pem>] [-b <offset>]] [-d <output.bin> [-u <public-key.pem>]\n\n", argv[0]);
 	printf("\nMultiple '-v' arguments increases verbosity of output.\n\n");
 
+	printf(" -b		Blob offset: force first blob to this absolute file offset (e.g. 0x1000)\n");
 	printf(" -c		Run generator and specify path to configuration YAML\n");
 	printf(" -d		Run analyzer and specify path to payload binary\n");
 	printf(" -h		print this help\n");
@@ -93,8 +94,12 @@ int main(int argc, char **argv)
 	char *dump_payload_filename = NULL;
 	char *private_key_filename = NULL;
 	char *public_key_filename = NULL;
-	while ((opt = getopt(argc, argv, (const char *)"c:d:hp:u:vw")) != -1) {
+	while ((opt = getopt(argc, argv, (const char *)"b:c:d:hp:u:vw")) != -1) {
 		switch (opt) {
+		case 'b':
+			generate_set_blob_offset((off_t)strtoul(optarg, NULL, 0));
+			break;
+
 		case 'c':
 			config_filename = optarg;
 			break;

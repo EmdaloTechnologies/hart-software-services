@@ -36,6 +36,7 @@
 
 void generate_payload(char const * const filename_output, char const * const private_key_filename, char const * const public_key_filename);
 void generate_init(void);
+void generate_set_blob_offset(off_t offset);
 
 size_t generate_add_chunk(struct HSS_BootChunkDesc chunk, void *buffer) __attribute__((nonnull));
 size_t generate_add_ziChunk(struct HSS_BootZIChunkDesc ziChunk);

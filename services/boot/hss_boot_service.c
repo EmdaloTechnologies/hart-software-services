@@ -279,6 +279,11 @@ static void boot_do_download_chunk(struct HSS_BootChunkDesc const *pChunk, ptrdi
     const uintptr_t execAddr = (uintptr_t)pChunk->execAddr + subChunkOffset;
     const uintptr_t loadAddr = (uintptr_t)pBootImage + (uintptr_t)pChunk->loadAddr + subChunkOffset;
     const size_t actualSize = MIN(subChunkSize, pChunk->size - subChunkOffset);
+
+    if (execAddr == loadAddr) {
+        return; // direct boot: data already at execution address
+    }
+
     memcpy_via_pdma((void *)execAddr, (void*)loadAddr, actualSize);
 }
 

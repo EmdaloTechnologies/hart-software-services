@@ -106,6 +106,7 @@ static struct ziChunkTableEntry {
 
 static size_t numChunks = 0;
 static size_t numZIChunks = 0;
+static off_t forced_blob_offset = 0;
 
 off_t bootImagePaddedSize = 0u;
 off_t chunkTablePaddedSize = 0u;
@@ -123,6 +124,13 @@ static void sign_payload(FILE *pFileOut, char const * const private_key_filename
 	char const * const public_key_filename) __attribute__((nonnull(1)));
 
 extern struct HSS_BootImage bootImage;
+
+/************************************************************************************/
+
+void generate_set_blob_offset(off_t offset)
+{
+	forced_blob_offset = offset;
+}
 
 /************************************************************************************/
 
@@ -196,18 +204,25 @@ static void generate_chunks(FILE *pFileOut)
 	size_t cumulativeBlobSize = 0u;
 
 	for (size_t i = 0u; i < numChunks; i++) {
-		// calculate offset for chunk blob in file:
-		//   = len(header) + len(chunkTable) + len(ziChunkTable) + len(all previous blobs)
-		chunkTable[i].chunk.loadAddr =
-			bootImage.chunkTableOffset
-			+ (numChunks * sizeof(struct HSS_BootChunkDesc))
-			+ sizeof(struct HSS_BootChunkDesc) // account for sentinel
-			+ calculate_padding(sizeof(struct HSS_BootChunkDesc) * (numChunks + 1), PAD_SIZE)
-			+ (numZIChunks * sizeof(struct HSS_BootZIChunkDesc))
-			+ sizeof(struct HSS_BootZIChunkDesc) // account for sentinel
-			+ calculate_padding(sizeof(struct HSS_BootZIChunkDesc) * (numZIChunks +1), PAD_SIZE)
-			+ cumulativeBlobSize
-			+ calculate_padding(cumulativeBlobSize, PAD_SIZE);
+		if (forced_blob_offset) {
+			// Direct boot: place blobs at forced file offset
+			chunkTable[i].chunk.loadAddr = (uintptr_t)forced_blob_offset
+				+ cumulativeBlobSize
+				+ calculate_padding(cumulativeBlobSize, PAD_SIZE);
+		} else {
+			// calculate offset for chunk blob in file:
+			//   = len(header) + len(chunkTable) + len(ziChunkTable) + len(all previous blobs)
+			chunkTable[i].chunk.loadAddr =
+				bootImage.chunkTableOffset
+				+ (numChunks * sizeof(struct HSS_BootChunkDesc))
+				+ sizeof(struct HSS_BootChunkDesc) // account for sentinel
+				+ calculate_padding(sizeof(struct HSS_BootChunkDesc) * (numChunks + 1), PAD_SIZE)
+				+ (numZIChunks * sizeof(struct HSS_BootZIChunkDesc))
+				+ sizeof(struct HSS_BootZIChunkDesc) // account for sentinel
+				+ calculate_padding(sizeof(struct HSS_BootZIChunkDesc) * (numZIChunks +1), PAD_SIZE)
+				+ cumulativeBlobSize
+				+ calculate_padding(cumulativeBlobSize, PAD_SIZE);
+		}
 
 		cumulativeBlobSize += chunkTable[i].chunk.size
 			+ calculate_padding(chunkTable[i].chunk.size, PAD_SIZE);
@@ -296,12 +311,28 @@ static void generate_blobs(FILE *pFileOut)
 {
 	debug_printf(0, "Outputting Binary Data\n");
 
-	// sanity check we are were we expected to be, vis-a-vis file padding
-	assert(chunkTable[0].chunk.loadAddr ==
-			bootImage.ziChunkTableOffset
-			+ (numZIChunks * sizeof(struct HSS_BootZIChunkDesc))
-			+ sizeof(struct HSS_BootZIChunkDesc) // account for sentinel
-			+ calculate_padding(sizeof(struct HSS_BootZIChunkDesc) * (numZIChunks +1), PAD_SIZE));
+	assert(pFileOut);
+
+	if (forced_blob_offset) {
+		// Direct boot: pad to forced offset before writing blobs
+		off_t current = ftello(pFileOut);
+		if (current > forced_blob_offset) {
+			fprintf(stderr, "Error: header + tables (0x%lx bytes) exceed "
+				"--blob-offset 0x%lx\n", (unsigned long)current,
+				(unsigned long)forced_blob_offset);
+			exit(EXIT_FAILURE);
+		}
+		write_pad(pFileOut, (size_t)(forced_blob_offset - current));
+	} else {
+		// sanity check we are were we expected to be, vis-a-vis file padding
+		assert(chunkTable[0].chunk.loadAddr ==
+				bootImage.ziChunkTableOffset
+				+ (numZIChunks * sizeof(struct HSS_BootZIChunkDesc))
+				+ sizeof(struct HSS_BootZIChunkDesc) // account for sentinel
+				+ calculate_padding(sizeof(struct HSS_BootZIChunkDesc) * (numZIChunks +1), PAD_SIZE));
+	}
+
+	assert((off_t)chunkTable[0].chunk.loadAddr == ftello(pFileOut));
 
 	for (size_t i = 0u; i < numChunks; i++) {
 		off_t posn = ftello(pFileOut);
