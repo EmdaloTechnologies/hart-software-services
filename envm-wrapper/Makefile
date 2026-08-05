@@ -64,6 +64,7 @@ LINKER_SCRIPT-envm-wrapper = envm-wrapper/envm-wrapper.ld
 
 COMPRESSED_TARGET=$(BINDIR)/$(TARGET-l2scratch:.elf=.bin.deflate)
 
+$(BINDIR)/$(TARGET-l2scratch:.elf=.bin): $(TARGET-l2scratch)
 $(BINDIR)/envm-wrapper/envm-wrapper_crt.o: $(COMPRESSED_TARGET) 
 $(BINDIR)/thirdparty/miniz/miniz.o: CFLAGS=$(CFLAGS_GCCEXT) -DMINIZ_NO_STDIO -DMINIZ_NO_TIME
 $(BINDIR)/envm-wrapper/envm-wrapper_validate_crc.o: CFLAGS=$(CFLAGS_GCCEXT)

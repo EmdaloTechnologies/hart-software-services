@@ -81,9 +81,18 @@ INCLUDES += \
 EXTRA_SRCS-$(CONFIG_SERVICE_QSPI) += \
 	baremetal/drivers/winbond_w25n01gv/winbond_w25n01gv.c
 
-$(BIND)R/baremetal/drivers/winbond_w25n01gv/winbond_w25n01gv.o: CFLAGS=$(CFLAGS_GCCEXT)
+$(BINDIR)/baremetal/drivers/winbond_w25n01gv/winbond_w25n01gv.o: CFLAGS=$(CFLAGS_GCCEXT)
 endif
 
+ifdef CONFIG_SERVICE_QSPI_MICRON_MQ25T
+INCLUDES += \
+	-Ibaremetal/drivers/micron_mt25q \
+
+EXTRA_SRCS-$(CONFIG_SERVICE_QSPI) += \
+	baremetal/drivers/micron_mt25q/micron_mt25q.c
+
+$(BINDIR)/baremetal/drivers/micron_mt25q/micron_mt25q.o: CFLAGS=$(CFLAGS_GCCEXT)
+endif
 
 
 ################################################################################################
@@ -147,8 +156,9 @@ endif
 
 config.h: $(SOC_CONFIG_FILES)
 $(SOC_CONFIG_FILES): $(SOC_FPGA_DESIGN_XML_FILE)
-	@mkdir -p $(BINDIR)/$(BOARD_DIR)
+	@mkdir -p $(BINDIR)/$(BOARD_DIR)/fpga_design_config
 	@$(ECHO) " MPFSCFGGEN    $<";
 	$(PYTHON) tools/polarfire-soc-configuration-generator/mpfs_configuration_generator.py $< $(BINDIR)/$(BOARD_DIR)
 
+$(OBJS): $(SOC_CONFIG_FILES)
 $(RISCV_TARGET): $(SOC_CONFIG_FILES)
